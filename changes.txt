@@ -1,0 +1,263 @@
+diff --git a/res/layout/main.xml b/res/layout/main.xml
+index c2eec36..38990fb 100644
+--- a/res/layout/main.xml
++++ b/res/layout/main.xml
+@@ -41,6 +41,7 @@
+         android:id="@+id/save"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+-        android:text="@string/save" />
++        android:text="@string/save"
++    	android:onClick="onClick"/>
+ 
+ </LinearLayout>
+\ No newline at end of file
+diff --git a/src/ca/ualberta/cs/lonelytwitter/DemoAbstract.java b/src/ca/ualberta/cs/lonelytwitter/DemoAbstract.java
+new file mode 100644
+index 0000000..9fe6451
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/DemoAbstract.java
+@@ -0,0 +1,30 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public abstract class DemoAbstract implements DemoInterface {
++	private String tweet;
++	private Integer numTweets;
++	
++	
++	public DemoAbstract(String text){
++		tweet = text;
++		numTweets = 0;
++	}
++	
++	public Integer getmaxTweets(Integer numTweets) {
++		return maxTweets-numTweets;
++	}
++
++	public String getTweet() {
++		return tweet;
++	}
++
++	public Boolean acceptedTweet() {
++		if (maxTweets >= numTweets) return true;
++		else return false;
++	}
++	
++	public void setNum() {
++		numTweets++;
++	}
++
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/DemoInterface.java b/src/ca/ualberta/cs/lonelytwitter/DemoInterface.java
+new file mode 100644
+index 0000000..7f3e5fb
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/DemoInterface.java
+@@ -0,0 +1,11 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public interface DemoInterface {
++	String welcome = "Welcome to a Tweet interface";
++	Integer maxTweets = 10;
++	
++	public Integer getmaxTweets(Integer numTweets); 
++	public String getTweet();
++	public Boolean acceptedTweet();
++	public void setNum();
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/DemoModel1.java b/src/ca/ualberta/cs/lonelytwitter/DemoModel1.java
+new file mode 100644
+index 0000000..61f728f
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/DemoModel1.java
+@@ -0,0 +1,23 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public class DemoModel1 extends DemoAbstract {
++
++	public DemoModel1(String text) {
++		super(text);
++		super.setNum();
++	}
++	
++	public Boolean validTweet(){
++		String tweet = super.getTweet();
++		
++		if (tweet.length() <= 2) 
++			return false;
++		else 
++			return true;
++	}
++	
++	public String welcomeMsg(){
++		return welcome;
++	}
++
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/DemoModel2.java b/src/ca/ualberta/cs/lonelytwitter/DemoModel2.java
+new file mode 100644
+index 0000000..bd6b461
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/DemoModel2.java
+@@ -0,0 +1,25 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public class DemoModel2 extends DemoAbstract {
++
++	public DemoModel2(String text) {
++		super(text);
++		super.setNum();
++	}
++	
++	public String getTweet(String test){
++		return "Modified original: " + super.getTweet();
++	}
++	
++	public void inflateTweets(){
++		super.setNum();
++		super.setNum();
++	}
++
++	public Integer lengthOfTweet(String tweet){
++		return tweet.length();
++	}
++	
++	
++
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/Interface1.java b/src/ca/ualberta/cs/lonelytwitter/Interface1.java
+new file mode 100644
+index 0000000..1bc8829
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/Interface1.java
+@@ -0,0 +1,6 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public interface Interface1 {
++	String s = "This is a interface";
++	public String getText();
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/Interfaceimp1.java b/src/ca/ualberta/cs/lonelytwitter/Interfaceimp1.java
+new file mode 100644
+index 0000000..d86ab4b
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/Interfaceimp1.java
+@@ -0,0 +1,10 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public class Interfaceimp1 implements Interface1 {
++
++	public String getText() {
++		// TODO Auto-generated method stub
++		return s + " implementation";
++	}
++
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/LonelyTwitterActivity.java b/src/ca/ualberta/cs/lonelytwitter/LonelyTwitterActivity.java
+index cd5feb6..ce5bba0 100644
+--- a/src/ca/ualberta/cs/lonelytwitter/LonelyTwitterActivity.java
++++ b/src/ca/ualberta/cs/lonelytwitter/LonelyTwitterActivity.java
+@@ -23,6 +23,7 @@ public class LonelyTwitterActivity extends Activity {
+ 	private static final String FILENAME = "file.sav";
+ 	private EditText bodyText;
+ 	private ListView oldTweetsList;
++	//HashSet<String> h
+ 	
+ 	/** Called when the activity is first created. */
+ 	@Override
+@@ -34,16 +35,16 @@ public class LonelyTwitterActivity extends Activity {
+ 		Button saveButton = (Button) findViewById(R.id.save);
+ 		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
+ 
+-		saveButton.setOnClickListener(new View.OnClickListener() {
+-
+-			public void onClick(View v) {
+-				setResult(RESULT_OK);
+-				String text = bodyText.getText().toString();
+-				saveInFile(text, new Date(System.currentTimeMillis()));
+-				finish();
++//		saveButton.setOnClickListener(new View.OnClickListener() {
++//		});
++	}
++	
++	public void onClick(View v) {
++		setResult(RESULT_OK);
++		String text = bodyText.getText().toString();
++		saveInFile(text, new Date(System.currentTimeMillis()));
++		finish();
+ 
+-			}
+-		});
+ 	}
+ 
+ 	@Override
+@@ -53,7 +54,7 @@ public class LonelyTwitterActivity extends Activity {
+ 		String[] tweets = loadFromFile();
+ 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+ 				R.layout.list_item, tweets);
+-		oldTweetsList.setAdapter(adapter);
++		oldTweetsList.setAdapter(adapter);		
+ 	}
+ 
+ 	private String[] loadFromFile() {
+@@ -66,6 +67,14 @@ public class LonelyTwitterActivity extends Activity {
+ 				tweets.add(line);
+ 				line = in.readLine();
+ 			}
++//			Test test = new Test("Hi");
++//			//test.setText("abc");
++//			tweets.add(test.getText());
++//			
++//			Test test2 = new Test2("Hi");
++//			tweets.add(test2.getText());
++			Interfaceimp1 i1 = new Interfaceimp1();
++			tweets.add(i1.getText());
+ 
+ 		} catch (FileNotFoundException e) {
+ 			// TODO Auto-generated catch block
+@@ -81,7 +90,7 @@ public class LonelyTwitterActivity extends Activity {
+ 		try {
+ 			FileOutputStream fos = openFileOutput(FILENAME,
+ 					Context.MODE_APPEND);
+-			fos.write(new String(date.toString() + " | " + text)
++			fos.write(new String(date.toString() + " | " + text + "\n")
+ 					.getBytes());
+ 			fos.close();
+ 		} catch (FileNotFoundException e) {
+diff --git a/src/ca/ualberta/cs/lonelytwitter/Test.java b/src/ca/ualberta/cs/lonelytwitter/Test.java
+new file mode 100644
+index 0000000..76abdb4
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/Test.java
+@@ -0,0 +1,17 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public class Test {
++	private String text;
++	
++	public Test(String t){
++		text = t;
++	}
++	
++	public String getText(){
++		return text;
++	}
++	
++	public void setText(String text){
++		this.text = text;
++	}
++}
+diff --git a/src/ca/ualberta/cs/lonelytwitter/Test2.java b/src/ca/ualberta/cs/lonelytwitter/Test2.java
+new file mode 100644
+index 0000000..8be4069
+--- /dev/null
++++ b/src/ca/ualberta/cs/lonelytwitter/Test2.java
+@@ -0,0 +1,8 @@
++package ca.ualberta.cs.lonelytwitter;
++
++public class Test2 extends Test {
++	public Test2(String text){
++		super(text);
++		setText("Hello" + text);
++	}
++}
